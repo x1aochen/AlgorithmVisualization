@@ -66,10 +66,11 @@ public class HeapSort : BaseAlgorithm,ITreeDiagram
     }
 
 
-
+    private Transform[] nodeArray;
     protected override IEnumerator Sort()
     {
         InitData();
+        nodeArray = SortHelper.instance.nodeArray;
         heapSize = array.Length;
         for (int i = 0; i < array.Length; i++)
         {
@@ -77,17 +78,17 @@ public class HeapSort : BaseAlgorithm,ITreeDiagram
         }
         Debug.Log("开始排序");
         //最小值与堆末尾元素交换，并保持小根堆
-        SortHelper.instance.SetColor(Color.blue, 0, --heapSize);
+        ColorHelper.instance.SetColor(nodeArray,Color.blue, 0, --heapSize);
         yield return StartCoroutine(SortHelper.instance.NodeSwap(0, heapSize));
-        SortHelper.instance.ResetColor(0);
+        ColorHelper.instance.ResetColor(nodeArray,0);
         while (heapSize > 0)
         {
             yield return StartCoroutine(Heapify(0));
-            SortHelper.instance.SetColor(Color.blue, 0, --heapSize);
+            ColorHelper.instance.SetColor(nodeArray,Color.blue, 0, --heapSize);
             yield return StartCoroutine(SortHelper.instance.NodeSwap(0, heapSize));
-            SortHelper.instance.ResetColor(0);
+            ColorHelper.instance.ResetColor(nodeArray,0);
         }
-        SortHelper.instance.SetColor(Color.blue, 0);
+        ColorHelper.instance.SetColor(nodeArray,Color.blue, 0);
 
         SortDone(0);
     }
@@ -103,9 +104,9 @@ public class HeapSort : BaseAlgorithm,ITreeDiagram
         while (sortDic[array[index]] > sortDic[array[(index - 1) / 2]])
         {
             int parent = (index - 1) / 2;
-            yield return StartCoroutine(SortHelper.instance.ISetColor(Color.yellow, index, parent));
+            yield return StartCoroutine(ColorHelper.instance.ISetColor(nodeArray,Color.yellow, index, parent));
             yield return StartCoroutine(SortHelper.instance.NodeSwap(index, parent));
-            SortHelper.instance.ResetColor(index, parent);
+            ColorHelper.instance.ResetColor(nodeArray, index, parent);
             index = parent;
         }
     }
@@ -123,28 +124,28 @@ public class HeapSort : BaseAlgorithm,ITreeDiagram
             int largest;
             if (left + 1 < heapSize)
             {
-                yield return StartCoroutine(SortHelper.instance.ISetColor(Color.yellow, left, left + 1));
+                yield return StartCoroutine(ColorHelper.instance.ISetColor(nodeArray, Color.yellow, left, left + 1));
                 largest = sortDic[array[left + 1]] > sortDic[array[left]] ? left + 1 : left;
-                SortHelper.instance.ResetColor(left, left + 1);
+                ColorHelper.instance.ResetColor(nodeArray,left, left + 1);
             }
             else
             {
                 largest = left;
             }
             //较大者与父亲作比较，谁大谁做父亲
-            yield return StartCoroutine(SortHelper.instance.ISetColor(Color.yellow, largest, index));
+            yield return StartCoroutine(ColorHelper.instance.ISetColor(nodeArray,Color.yellow, largest, index));
             //这边重新定义了个Parent用来存储 孩子与父亲之间的最大者，是为了后面的颜色更改，与算法无关，否则正常直接用largest来存就行了
             int parent = sortDic[array[largest]] > sortDic[array[index]] ? largest : index;
 
             //如果孩子中没有比自己大的
             if (parent == index)
             {
-                SortHelper.instance.ResetColor(index, largest);
+                ColorHelper.instance.ResetColor(nodeArray,index, largest);
                 yield break;
             }
 
             yield return StartCoroutine(SortHelper.instance.NodeSwap(index, parent));
-            SortHelper.instance.ResetColor(index, parent);
+            ColorHelper.instance.ResetColor(nodeArray,index, parent);
             //继续向下比对
             index = parent;
             left = index * 2 + 1;

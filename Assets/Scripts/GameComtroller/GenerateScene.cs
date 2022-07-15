@@ -75,7 +75,7 @@ public class GenerateScene : MonoBehaviour
         Transform head = GameObject.Instantiate<GameObject>(mutilCube, treeDiagram).transform;
         head.position = treeDiagram.position;
         SetNumber(SortHelper.instance.sortDic[SortHelper.instance.array[0]], head);
-        SortHelper.instance.OriginColor = head.GetComponent<Renderer>().material.color;
+        ColorHelper.instance.OriginColor = head.GetComponent<Renderer>().material.color;
         SortHelper.instance.nodeArray[0] = head;
         GenerateTree(0);
         SortHelper.instance.TreeHeight = treeHeight;

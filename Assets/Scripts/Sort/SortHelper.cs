@@ -22,7 +22,7 @@ public class SortHelper
 
     private SortHelper()
     {
-        wait = new WaitForSeconds(0.2f);
+
         until = new WaitUntil(() => play == true);
         sortDic = new Dictionary<Transform, int>();
         array = new Transform[0];
@@ -62,10 +62,8 @@ public class SortHelper
     public Transform[] nodeArray; //树节点存储数组
     private float refCubeSwap; //SmoothDamp传入参数
     private Vector3 refNodeSwap; ////SmoothDamp传入参数
-    private WaitForSeconds wait; //树节点比对时颜色的显示时间
     private WaitUntil until; //暂停直道play为true才向下执行
     private bool play = true;
-    private Color originColor; //树节点原始颜色
     private Transform treeStartPos; //树节点生成起始点
     private int treeHeight; //树高
     private Vector3 offset; //Cube相对父物体偏移量
@@ -73,10 +71,7 @@ public class SortHelper
     private float swapLerp; //Cube交换时的速度
     private int num; //总大小
     public float nodeDistanceY;
-    public Color OriginColor
-    {
-        set => originColor = value;
-    }
+
     public Transform TreeStartPos
     {
         set => treeStartPos = value;
@@ -286,7 +281,7 @@ public class SortHelper
             if (nodeArray[i] != null)
             {
                 Swap<Transform>(nodeArray, i, n);
-                ResetColor(i, n);
+                ColorHelper.instance.ResetColor(nodeArray,i, n);
             }
         }
         if (nodeArray[0] != null)
@@ -312,7 +307,7 @@ public class SortHelper
         if (k < num)
         {
             nodeArray[k].position = parent + new Vector3(-nodeOffset, 0, nodeDistanceY);
-            ResetColor(k);
+            ColorHelper.instance.ResetColor(nodeArray,k);
             ResetNodePos(k, floor - 1, nodeArray[k].position);
         }
         
@@ -320,7 +315,7 @@ public class SortHelper
         {
             nodeArray[k + 1].position = parent + new Vector3(nodeOffset, 0, nodeDistanceY);
             ResetNodePos(k + 1, floor - 1, nodeArray[k + 1].position);
-            ResetColor(k + 1);
+            ColorHelper.instance.ResetColor(nodeArray,k + 1);
         }
     }
 
@@ -351,46 +346,6 @@ public class SortHelper
         {
             nodeArray[0].position = treeStartPos.position;
             ResetNodePos(0, treeHeight, nodeArray[0].position);
-        }
-    }
-    #endregion
-
-    #region Color
-    /// <summary>
-    /// 比对时，等待
-    /// </summary>
-    /// <param name="color"></param>
-    /// <param name="arr"></param>
-    /// <returns></returns>
-    public IEnumerator ISetColor(Color color, params int[] arr)
-    {
-        for (int i = 0; i < arr.Length; i++)
-        {
-            nodeArray[arr[i]].GetComponent<Renderer>().material.color = nodeArray[arr[i]].GetComponent<Renderer>().material.color = color;
-        }
-        yield return wait;
-    }
-
-    /// <summary>
-    /// 交换时，直接改变
-    /// </summary>
-    /// <param name="color"></param>
-    /// <param name="arr"></param>
-    public void SetColor(Color color, params int[] arr)
-    {
-        for (int i = 0; i < arr.Length; i++)
-        {
-            nodeArray[arr[i]].GetComponent<Renderer>().material.color = color;
-        }
-    }
-
-    public void ResetColor(params int[] arr)
-    {
-        for (int i = 0; i < arr.Length; i++)
-        {
-            if (nodeArray[i] != null)
-                nodeArray[arr[i]].GetComponent<Renderer>().material.color = originColor;
-
         }
     }
     #endregion
@@ -427,7 +382,6 @@ public class SortHelper
     }
 
     #endregion
-
-    
+   
 }
 
